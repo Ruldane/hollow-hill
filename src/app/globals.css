@@ -1,26 +1,1734 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ------------------------------------------------------------------ */
+/*  Tokens: earth, glass, brass and lamplight                         */
+/* ------------------------------------------------------------------ */
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-plate: var(--font-bodoni), "Bodoni 72", Didot, "Times New Roman", serif;
+  --font-book: var(--font-oldstandard), "Iowan Old Style", Georgia, serif;
+  --font-hand: var(--font-pinyon), "Snell Roundhand", "Apple Chancery", cursive;
+
+  --color-japan: #14100c;
+  --color-japan-2: #1d1611;
+  --color-lacquer: #2a2019;
+  --color-brass: #b8924f;
+  --color-brass-hi: #e3c98e;
+  --color-brass-lo: #6f532a;
+  --color-brass-ink: #33230f;
+  --color-bone: #e6dabf;
+  --color-bone-2: #d5c5a2;
+  --color-ink: #1f150d;
+  --color-ink-soft: #5b4634;
+  --color-vermilion: #c33b21;
+  --color-vermilion-ink: #9e2d17;
+  --color-umber: #3b291c;
+
+  --ease-instrument: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
-@media (prefers-color-scheme: dark) {
+:root {
+  --world-w: 180;
+  --world-rows: 720;
+  --pad: 16px;
+  --stile-l: 12px;
+  --stile-r: 12px;
+  --rail-h: 60px;
+  --note-w: 0px;
+  --gutter: 0px;
+  --gutter2: 0px;
+  --shelf-w: 0px;
+  --daylight: 1;
+  --grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .3  0 0 0 0 .22  0 0 0 0 .12  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  --fibre: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='500' height='500'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.012 .07' numOctaves='2' seed='11'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .32  0 0 0 0 .18  0 0 0 .32 -.06'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>");
+  --lacquer-grain: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='l'><feTurbulence type='fractalNoise' baseFrequency='.004 .18' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .4  0 0 0 0 .25  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23l)'/></svg>");
+}
+
+@media (max-width: 1099px) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --world-w: 150;
+  }
+}
+@media (max-width: 699px) {
+  :root {
+    --world-w: 100;
+    --pad: 8px;
+    --stile-l: 10px;
+    --stile-r: 10px;
+    --rail-h: 56px;
+  }
+  .rail-top {
+    padding-top: 10px;
+  }
+  .frame-top {
+    padding: 12px 12px 10px;
+  }
+  .plaque {
+    padding: 10px 18px 9px;
+  }
+  .plaque h1 {
+    font-size: clamp(1.45rem, 7.4vw, 2.2rem);
+    letter-spacing: 0.04em;
+  }
+  .clock-btn {
+    padding: 0 10px 0 6px;
+    gap: 7px;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+  }
+  .knob-btn {
+    padding: 0 8px;
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+  }
+  .rail-plate {
+    padding: 0 6px;
+    gap: 2px;
+    justify-content: space-between;
   }
 }
 
+@media (min-width: 1100px) {
+  :root {
+    --pad: 32px;
+    --stile-l: 64px;
+    --stile-r: 30px;
+    --gutter: 52px;
+    --note-w: clamp(320px, 28vw, 460px);
+    --rail-h: 64px;
+  }
+}
+
+html {
+  background: var(--color-japan);
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+  scrollbar-color: #5a4630 #120d09;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100dvh;
+  color: var(--color-bone);
+  font-family: var(--font-book);
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  background-color: var(--color-japan);
+  /* Black japanning, lit by the window by day and by the lamp at night. */
+  background-image:
+    radial-gradient(ellipse 70% 45% at 12% 0%, rgb(214 196 160 / calc(0.1 * var(--daylight))), transparent 70%),
+    radial-gradient(ellipse 50% 40% at 78% 42%, rgb(214 140 60 / calc(0.11 * (1 - var(--daylight)))), transparent 70%),
+    var(--lacquer-grain),
+    linear-gradient(180deg, #17120d, #0e0a07 60%, #120d0a);
+  overflow-x: clip;
+}
+
+::selection {
+  background: rgb(195 59 33 / 0.35);
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brass-hi);
+  outline-offset: 3px;
+}
+
+.sr-only-select {
+  user-select: none;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Skip links                                                        */
+/* ------------------------------------------------------------------ */
+
+.skip {
+  position: absolute;
+  left: 12px;
+  top: -80px;
+  z-index: 60;
+  padding: 10px 14px;
+  background: var(--color-bone);
+  color: var(--color-ink);
+  font-family: var(--font-book);
+  text-decoration: none;
+  border: 1px solid var(--color-ink);
+}
+.skip:focus {
+  top: 12px;
+}
+
+/* ------------------------------------------------------------------ */
+/*  The case                                                          */
+/* ------------------------------------------------------------------ */
+
+.cabinet {
+  container-type: inline-size;
+  width: 100%;
+  padding: 0 var(--pad) calc(var(--rail-h) + 40px);
+  box-sizing: border-box;
+}
+
+.case {
+  --glass-w: calc(100cqw - var(--stile-l) - var(--stile-r));
+  --cell: calc(var(--glass-w) / var(--world-w));
+  --world-h: calc(var(--cell) * var(--world-rows));
+  position: relative;
+  margin: 0 auto;
+  width: calc(var(--stile-l) + var(--glass-w) + var(--stile-r));
+}
+
+@media (min-width: 1100px) {
+  .case {
+    --glass-w: min(1000px, calc(100cqw - var(--stile-l) - var(--stile-r) - var(--gutter) - var(--note-w)));
+    width: calc(var(--stile-l) + var(--glass-w) + var(--stile-r) + var(--gutter) + var(--note-w));
+  }
+}
+
+@media (min-width: 1600px) {
+  :root {
+    --gutter2: 44px;
+    --shelf-w: 290px;
+  }
+  .case {
+    --glass-w: min(1080px, calc(100cqw - var(--stile-l) - var(--stile-r) - var(--gutter) - var(--note-w) - var(--gutter2) - var(--shelf-w)));
+    width: calc(var(--stile-l) + var(--glass-w) + var(--stile-r) + var(--gutter) + var(--note-w) + var(--gutter2) + var(--shelf-w));
+  }
+}
+@media (min-width: 2200px) {
+  :root {
+    --note-w: 500px;
+    --shelf-w: 320px;
+  }
+  .case {
+    --glass-w: min(1260px, calc(100cqw - var(--stile-l) - var(--stile-r) - var(--gutter) - var(--note-w) - var(--gutter2) - var(--shelf-w)));
+  }
+}
+
+/* The top rail carries the title plaque. */
+.rail-top {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: end;
+  gap: 18px;
+  padding: 22px 0 0;
+}
+@media (min-width: 1100px) {
+  .rail-top {
+    grid-template-columns: calc(var(--stile-l) + var(--glass-w) + var(--stile-r)) var(--gutter) var(--note-w);
+    padding-top: 36px;
+    gap: 0;
+  }
+}
+
+.frame-top {
+  position: relative;
+  padding: 18px 20px 16px;
+  background:
+    var(--lacquer-grain),
+    linear-gradient(180deg, #2a2019 0%, #17110c 38%, #0f0b08 100%);
+  border-radius: 3px 3px 0 0;
+  box-shadow:
+    inset 0 1px 0 rgb(255 230 190 / 0.1),
+    inset 0 -3px 0 rgb(184 146 79 / 0.28),
+    0 30px 60px -30px rgb(0 0 0 / 0.8);
+}
+@media (min-width: 1100px) {
+  .frame-top {
+    padding: 26px 30px 22px var(--stile-l);
+  }
+}
+
+/* A single gilt pinstripe runs round the whole frame. */
+.frame-top::after {
+  content: "";
+  position: absolute;
+  inset: 7px 7px 0;
+  border: 1px solid rgb(184 146 79 / 0.32);
+  border-bottom: 0;
+  border-radius: 2px 2px 0 0;
+  pointer-events: none;
+}
+
+.plaque {
+  position: relative;
+  display: inline-grid;
+  gap: 2px;
+  padding: 14px 26px 13px;
+  color: var(--color-brass-ink);
+  background:
+    linear-gradient(180deg, rgb(255 244 214 / 0.35), transparent 38%),
+    repeating-linear-gradient(90deg, rgb(255 240 200 / 0.05) 0 1px, transparent 1px 3px),
+    linear-gradient(170deg, #dcc185 0%, #bf9a58 42%, #ad8a4c 72%, #c7a869 100%);
+  border-radius: 2px;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 238 196 / 0.45),
+    inset 0 0 0 3px rgb(90 64 28 / 0.55),
+    inset 0 0 0 4px rgb(255 238 196 / 0.25),
+    0 2px 0 #5d4420,
+    0 10px 24px -8px rgb(0 0 0 / 0.8);
+}
+.plaque::before,
+.plaque::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  width: 7px;
+  height: 7px;
+  margin-top: -3.5px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f4e2b0, #8a6a34 60%, #4f3a19);
+  box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 0.4);
+}
+.plaque::before {
+  left: 9px;
+}
+.plaque::after {
+  right: 9px;
+}
+.plaque h1 {
+  margin: 0;
+  font-family: var(--font-plate);
+  font-weight: 500;
+  font-size: clamp(1.9rem, 5.6vw, 3.6rem);
+  font-variation-settings: "opsz" 96;
+  line-height: 1.02;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow:
+    0 1px 0 rgb(255 240 200 / 0.55),
+    0 -1px 0 rgb(60 40 14 / 0.35);
+}
+.plaque p {
+  margin: 0;
+  color: #251806;
+  font-family: var(--font-plate);
+  font-style: italic;
+  font-size: clamp(0.86rem, 1.7vw, 1.08rem);
+  font-variation-settings: "opsz" 14;
+  line-height: 1.35;
+  text-shadow: 0 1px 0 rgb(255 240 200 / 0.45);
+  text-wrap: balance;
+}
+
+/* Instruments on the right of the top rail: watch, barometer. */
+.instruments {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .instruments {
+    grid-column: 3;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 0 4px 10px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  The hill: frame stiles, glass, gutter, notebook                    */
+/* ------------------------------------------------------------------ */
+
+.hill {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--stile-l) var(--glass-w) var(--stile-r);
+  min-height: var(--world-h);
+}
+@media (min-width: 1100px) {
+  .hill {
+    grid-template-columns: var(--stile-l) var(--glass-w) var(--stile-r) var(--gutter) var(--note-w);
+  }
+}
+@media (min-width: 1600px) {
+  .hill {
+    grid-template-columns: var(--stile-l) var(--glass-w) var(--stile-r) var(--gutter) var(--note-w) var(--gutter2) var(--shelf-w);
+  }
+  .rail-top {
+    grid-template-columns: calc(var(--stile-l) + var(--glass-w) + var(--stile-r)) var(--gutter) var(--note-w) var(--gutter2) var(--shelf-w);
+  }
+  .rail-top .instruments {
+    display: none;
+  }
+}
+
+/* The observer's shelf (wide screens): instruments, a tally, the specimen card. */
+.shelf {
+  display: none;
+}
+@media (min-width: 1600px) {
+  .shelf {
+    display: block;
+    grid-column: 7;
+    position: relative;
+  }
+  .shelf-inner {
+    position: sticky;
+    top: 22px;
+    display: grid;
+    gap: 22px;
+    padding-bottom: calc(var(--rail-h) + 30px);
+  }
+  .shelf-inner:has(#specimen-dock .specimen) .tally {
+    display: none;
+  }
+  .shelf-inner {
+    max-height: calc(100vh - 30px);
+    overflow-y: auto;
+    scrollbar-width: none;
+  }
+  .shelf .instruments {
+    grid-column: auto;
+    display: flex;
+    justify-content: space-around;
+    padding: 0;
+  }
+}
+.tally {
+  position: relative;
+  padding: 16px 18px 14px;
+  color: var(--color-ink);
+  background-color: #e8ddc2;
+  background-image: var(--fibre);
+  box-shadow: 0 0 0 1px rgb(60 40 20 / 0.3), 0 18px 34px -14px rgb(0 0 0 / 0.8);
+}
+.tally::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid rgb(60 40 20 / 0.35);
+  pointer-events: none;
+}
+.tally h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-plate);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.15rem;
+}
+.tally dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 12px;
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.tally dt {
+  color: var(--color-ink-soft);
+}
+.tally dd {
+  margin: 0;
+  text-align: right;
+}
+.offer-count {
+  padding: 1px 7px;
+  font-size: 0.72rem;
+  font-style: italic;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  border: 1px solid rgb(60 40 12 / 0.45);
+}
+#notebook-dock {
+  display: contents;
+}
+/* On desktop the specimen card takes the pinned slip's place beside the notebook. */
+.today-track:has(.specimen) .today {
+  display: none;
+}
+.specimen.docked.in-notebook {
+  position: sticky;
+  bottom: calc(var(--rail-h) + 22px);
+  margin: 0 14px;
+  max-height: calc(100vh - var(--rail-h) - 70px);
+  overflow: auto;
+  pointer-events: auto;
+}
+.specimen.docked {
+  position: relative;
+  inset: auto;
+  width: auto;
+  max-height: none;
+  z-index: auto;
+}
+
+.stile {
+  position: relative;
+  background:
+    var(--lacquer-grain),
+    linear-gradient(90deg, #211912, #100c08 45%, #1c1510);
+}
+.stile-left {
+  box-shadow: inset -2px 0 0 rgb(184 146 79 / 0.3), inset 1px 0 0 rgb(255 230 190 / 0.06);
+}
+.stile-right {
+  box-shadow: inset 2px 0 0 rgb(184 146 79 / 0.3), inset -1px 0 0 rgb(255 230 190 / 0.06);
+}
+
+/* Etched graduations: one tick to the inch, a numeral every six. */
+.gauge {
+  position: absolute;
+  top: calc(var(--cell) * 84);
+  bottom: 0;
+  right: 6px;
+  width: 14px;
+  background-image:
+    repeating-linear-gradient(180deg, rgb(200 162 94 / 0.75) 0 1px, transparent 1px calc(var(--cell) * 12.7)),
+    repeating-linear-gradient(180deg, rgb(200 162 94 / 0.35) 0 1px, transparent 1px calc(var(--cell) * 3.175));
+  background-size: 100% calc(var(--cell) * 12.7), 45% calc(var(--cell) * 3.175);
+  background-position: right top, right top;
+  background-repeat: repeat-y;
+  pointer-events: none;
+}
+.gauge-mark {
+  position: absolute;
+  right: 22px;
+  transform: translateY(-50%);
+  font-family: var(--font-book);
+  font-size: 0.72rem;
+  font-variant-numeric: lining-nums;
+  letter-spacing: 0.04em;
+  color: rgb(212 176 108 / 0.9);
+  white-space: nowrap;
+}
+.gauge-mark small {
+  font-size: 0.62rem;
+  font-style: italic;
+  opacity: 0.8;
+}
+@media (max-width: 1099px) {
+  .gauge {
+    right: 1px;
+    width: 8px;
+  }
+  .gauge-mark {
+    display: none;
+  }
+}
+
+.glass {
+  position: relative;
+  grid-column: 2;
+  cursor: crosshair;
+  touch-action: pan-y;
+  background: #1a130d;
+  overflow: clip;
+}
+.glass[data-tool="knock"] {
+  cursor: pointer;
+}
+.glass[data-tool="crumb"],
+.glass[data-tool="honey"] {
+  cursor: copy;
+}
+.stage-wrap {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  height: 100lvh;
+  overflow: hidden;
+}
+.stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+/* The bevelled glass pane: faint reflections of the room, not a UI blur. */
+.sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(115deg, transparent 18%, rgb(255 246 226 / 0.045) 22%, transparent 27%),
+    linear-gradient(115deg, transparent 58%, rgb(255 246 226 / 0.03) 61%, rgb(255 246 226 / 0.05) 62%, transparent 66%),
+    linear-gradient(180deg, rgb(255 240 210 / 0.035), transparent 30%);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 240 210 / 0.08),
+    inset 3px 0 0 rgb(255 240 210 / 0.04),
+    inset 0 0 40px rgb(0 0 0 / 0.35);
+}
+.glass.knocked .stage {
+  animation: knock 420ms var(--ease-instrument);
+}
+@keyframes knock {
+  0% {
+    transform: translate(0, 0);
+  }
+  12% {
+    transform: translate(-1.5px, 0.5px);
+  }
+  28% {
+    transform: translate(1.2px, -0.4px);
+  }
+  46% {
+    transform: translate(-0.7px, 0.2px);
+  }
+  70% {
+    transform: translate(0.3px, 0);
+  }
+  100% {
+    transform: translate(0, 0);
+  }
+}
+
+/* The fault in the frame by the eastern brass. */
+.fault {
+  position: absolute;
+  left: -3px;
+  width: 16px;
+  height: 22px;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.brass-corner {
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  z-index: 3;
+}
+@media (max-width: 1099px) {
+  .brass-corner {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* The laboratory lamp beside the nursery glass. */
+.gutter {
+  position: relative;
+  display: none;
+}
+@media (min-width: 1100px) {
+  .gutter {
+    display: block;
+  }
+}
+.lab-lamp {
+  position: absolute;
+  left: 2px;
+  width: 48px;
+  height: 120px;
+  top: calc(var(--cell) * 318);
+}
+.lab-lamp .flame {
+  transition: opacity 1.2s ease;
+  opacity: 0.15;
+}
+html[data-lamp="lit"] .lab-lamp .flame {
+  opacity: 1;
+}
+.lab-lamp .glow {
+  position: absolute;
+  inset: -80px -60px;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 170 80 / 0.28), transparent);
+  opacity: 0;
+  transition: opacity 1.5s ease;
+  pointer-events: none;
+}
+html[data-lamp="lit"] .lab-lamp .glow {
+  opacity: 1;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Dr. Vance's notebook                                              */
+/* ------------------------------------------------------------------ */
+
+.notebook {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .notebook {
+    position: relative;
+    display: block;
+    grid-column: 5;
+    color: var(--color-ink);
+    background-color: var(--color-bone);
+    background-image:
+      radial-gradient(circle at 12% 8%, rgb(150 100 40 / 0.12) 0 24px, transparent 60px),
+      radial-gradient(circle at 88% 35%, rgb(150 100 40 / 0.09) 0 14px, transparent 44px),
+      radial-gradient(circle at 30% 71%, rgb(150 100 40 / 0.1) 0 30px, transparent 80px),
+      radial-gradient(circle at 76% 90%, rgb(150 100 40 / 0.08) 0 18px, transparent 50px),
+      linear-gradient(90deg, transparent 38px, rgb(195 59 33 / 0.5) 38px 39px, transparent 39px 42px, rgb(195 59 33 / 0.3) 42px 43px, transparent 43px),
+      repeating-linear-gradient(180deg, transparent 0 29px, rgb(90 70 50 / 0.18) 29px 30px),
+      var(--fibre);
+    box-shadow:
+      0 0 0 1px rgb(60 40 20 / 0.3),
+      0 40px 80px -30px rgb(0 0 0 / 0.9),
+      inset 0 0 60px rgb(120 80 30 / 0.18);
+  }
+}
+
+.nb-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(var(--cell) * var(--rows));
+  padding: 26px 26px 34px 58px;
+  box-sizing: border-box;
+}
+.nb-zone:last-of-type {
+  padding-bottom: 300px;
+}
+.nb-entries {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 30px;
+}
+.plate-head {
+  margin: 0 0 10px;
+  font-family: var(--font-plate);
+  font-weight: 400;
+  font-style: italic;
+  font-size: 1.6rem;
+  font-variation-settings: "opsz" 40;
+  line-height: 1.1;
+  color: var(--color-ink);
+}
+.plate-head .num {
+  font-style: normal;
+  font-variant-numeric: lining-nums;
+  letter-spacing: 0.08em;
+  color: var(--color-vermilion-ink);
+  margin-right: 0.4em;
+}
+.plate-head .cap {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-book);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+  font-variation-settings: normal;
+}
+
+.fragment {
+  margin: 0;
+}
+.fragment .date {
+  display: block;
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  line-height: 1;
+  color: var(--color-vermilion-ink);
+  margin-bottom: 4px;
+}
+.hand {
+  font-family: var(--font-hand);
+  font-size: 1.4rem;
+  line-height: 1.26;
+  color: #2b1b10;
+  word-spacing: 0.06em;
+}
+.glyphs [data-i] {
+  transition: color 0.2s linear;
+}
+.glyphs [data-i].taken {
+  color: transparent;
+}
+html[data-still="1"] .glyphs [data-i] {
+  transition: color 1.4s ease;
+}
+
+.instructions {
+  margin-bottom: 8px;
+  font-family: var(--font-book);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--color-ink-soft);
+}
+.instructions p {
+  margin: 0 0 4px;
+}
+
+/* The pinned slip of today's notes, which the page scrolls beneath. */
+.today-track {
+  position: absolute;
+  inset: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+.today {
+  position: sticky;
+  bottom: calc(var(--rail-h) + 22px);
+  margin: 0 14px;
+  pointer-events: auto;
+  padding: 14px 18px 14px;
+  color: var(--color-ink);
+  background-color: #efe6cf;
+  background-image: var(--fibre), linear-gradient(180deg, rgb(255 255 255 / 0.25), transparent);
+  box-shadow:
+    0 1px 0 rgb(60 40 20 / 0.25),
+    0 18px 30px -12px rgb(0 0 0 / 0.55);
+  transform: rotate(-0.6deg);
+}
+.today h2 span:last-child {
+  white-space: nowrap;
+}
+.today h2 {
+  margin: 0 0 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  font-family: var(--font-book);
+  font-weight: 400;
+  font-size: 0.8rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.today ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.today li {
+  font-family: var(--font-hand);
+  font-size: 1.24rem;
+  line-height: 1.22;
+  color: #2b1b10;
+}
+.today li time {
+  font-family: var(--font-book);
+  font-size: 0.72rem;
+  font-style: italic;
+  color: var(--color-ink-soft);
+  margin-right: 6px;
+  letter-spacing: 0.02em;
+}
+.today.docked h2 {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.today.docked {
+  position: relative;
+  bottom: auto;
+  margin: 0;
+  transform: rotate(-0.8deg);
+}
+.today li.fresh {
+  animation: ink-in 1.6s var(--ease-instrument);
+}
+@keyframes ink-in {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+html[data-still="1"] .today.docked h2 {
+  flex-wrap: wrap;
+  row-gap: 2px;
+}
+.today.docked {
+  position: relative;
+  bottom: auto;
+  margin: 0;
+  transform: rotate(-0.8deg);
+}
+.today li.fresh {
+  animation: fade-in 1.2s ease;
+}
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.text-link {
+  font: inherit;
+  color: var(--color-vermilion-ink);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+
+/* Narrow screens: slips glued to the glass where nothing lives. */
+.slip {
+  position: absolute;
+  z-index: 2;
+  left: 10px;
+  width: min(66%, 360px);
+  top: calc(var(--cell) * var(--row));
+  padding: 10px 14px 12px;
+  color: var(--color-ink);
+  background-color: #eadfc5;
+  background-image: var(--fibre);
+  box-shadow: 0 10px 22px -10px rgb(0 0 0 / 0.7);
+  transform: rotate(-0.8deg);
+  cursor: auto;
+}
+.slip .date {
+  font-family: var(--font-hand);
+  color: var(--color-vermilion-ink);
+  font-size: 1.1rem;
+  display: block;
+}
+.slip .hand {
+  font-size: 1.24rem;
+}
+@media (min-width: 1100px) {
+  .slip {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Bottom rail and the ledger below the hill                          */
+/* ------------------------------------------------------------------ */
+
+.frame-bottom {
+  height: 34px;
+  background:
+    var(--lacquer-grain),
+    linear-gradient(180deg, #0f0b08, #1a130e 60%, #241b14);
+  box-shadow: inset 0 3px 0 rgb(184 146 79 / 0.28);
+  border-radius: 0 0 3px 3px;
+}
+@media (min-width: 1100px) {
+  .frame-bottom {
+    width: calc(var(--stile-l) + var(--glass-w) + var(--stile-r));
+    height: 46px;
+  }
+}
+
+.ledger {
+  position: relative;
+  color-scheme: light;
+  margin: 56px auto 0;
+  max-width: 1180px;
+  color: var(--color-ink);
+  background-color: var(--color-bone);
+  background-image:
+    radial-gradient(circle at 8% 12%, rgb(150 100 40 / 0.1) 0 30px, transparent 70px),
+    radial-gradient(circle at 92% 70%, rgb(150 100 40 / 0.09) 0 22px, transparent 60px),
+    var(--fibre);
+  box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.9);
+  padding: 34px 22px 44px;
+}
+@media (min-width: 900px) {
+  .ledger {
+    padding: 52px 64px 64px;
+  }
+  .ledger-spread {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 0 72px;
+  }
+  .ledger-spread {
+    position: relative;
+  }
+  .ledger-spread::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 53.2%;
+    width: 1px;
+    background: linear-gradient(180deg, transparent, rgb(90 60 30 / 0.3) 10%, rgb(90 60 30 / 0.3) 90%, transparent);
+  }
+}
+.ledger h2 {
+  margin: 0 0 6px;
+  font-family: var(--font-plate);
+  font-weight: 400;
+  font-style: italic;
+  font-size: clamp(1.8rem, 3.4vw, 2.6rem);
+  font-variation-settings: "opsz" 60;
+  line-height: 1.05;
+}
+.ledger h2 .num {
+  font-style: normal;
+  color: var(--color-vermilion-ink);
+  letter-spacing: 0.08em;
+  margin-right: 0.35em;
+}
+.ledger .lede {
+  margin: 0 0 34px;
+  max-width: 60ch;
+  font-style: italic;
+  color: var(--color-ink-soft);
+}
+.ledger h3 {
+  margin: 34px 0 10px;
+  font-family: var(--font-plate);
+  font-weight: 500;
+  font-size: 1.28rem;
+  font-variation-settings: "opsz" 24;
+}
+.ledger p,
+.ledger li {
+  font-size: 1rem;
+}
+
+.census {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.census caption {
+  text-align: left;
+  font-family: var(--font-book);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--color-ink-soft);
+  padding-bottom: 8px;
+}
+.census th,
+.census td {
+  padding: 5px 0;
+  vertical-align: baseline;
+  text-align: left;
+  font-weight: 400;
+}
+.census thead th {
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  border-bottom: 1px solid rgb(60 40 20 / 0.55);
+}
+.census tbody tr + tr th,
+.census tbody tr + tr td {
+  border-top: 1px dotted rgb(60 40 20 / 0.28);
+}
+.census tbody tr.group th {
+  padding-top: 14px;
+  font-family: var(--font-plate);
+  font-style: italic;
+  font-size: 1.02rem;
+  border-top: 0;
+}
+.census td.n {
+  text-align: right;
+  padding-right: 18px;
+  min-width: 5ch;
+}
+.census td.remark {
+  font-family: var(--font-hand);
+  font-size: 1.2rem;
+  line-height: 1;
+  color: #3b2718;
+}
+
+.letters-held {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  margin: 12px 0 16px;
+  padding: 0;
+  list-style: none;
+}
+.letters-held li {
+  font-family: var(--font-hand);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+.letters-held .gap {
+  display: inline-block;
+  min-width: 0.4em;
+  border-bottom: 1px solid var(--color-vermilion);
+}
+.letters-held .held {
+  font-family: var(--font-book);
+  font-size: 0.8rem;
+  color: var(--color-ink-soft);
+  margin-left: 4px;
+}
+
+.visit-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-variant-numeric: lining-nums;
+}
+.visit-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 0;
+  border-bottom: 1px dotted rgb(60 40 20 / 0.28);
+}
+.absences {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+.absences li {
+  font-family: var(--font-hand);
+  font-size: 1.36rem;
+  line-height: 1.32;
+}
+.absences time {
+  display: block;
+  font-family: var(--font-book);
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--color-ink-soft);
+}
+.colophon p {
+  max-width: 72ch;
+}
+.colophon {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid rgb(60 40 20 / 0.4);
+  font-size: 0.92rem;
+  color: var(--color-ink-soft);
+}
+
+/* Paper buttons (inside the ledger and on slips). */
+.paper-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 14px;
+  font-family: var(--font-book);
+  font-size: 0.92rem;
+  letter-spacing: 0.02em;
+  color: var(--color-ink);
+  background: rgb(255 250 235 / 0.5);
+  border: 1px solid rgb(60 40 20 / 0.55);
+  border-radius: 1px;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.12s ease;
+}
+.paper-btn:hover {
+  background: rgb(255 250 235 / 0.85);
+}
+.paper-btn:active {
+  transform: translateY(1px);
+}
+.paper-btn.seal {
+  color: #fff4e6;
+  background: var(--color-vermilion-ink);
+  border-color: #6d1d0e;
+}
+.paper-btn.seal:hover {
+  background: #b0341c;
+}
+
+.switch-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+.switch-row input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--color-vermilion-ink);
+}
+
+/* ------------------------------------------------------------------ */
+/*  The brass rail of controls                                         */
+/* ------------------------------------------------------------------ */
+
+.rail {
+  position: fixed;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0 max(8px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(8px, env(safe-area-inset-left));
+  pointer-events: none;
+}
+.rail-plate {
+  pointer-events: auto;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: var(--rail-h);
+  margin: 0 auto 8px;
+  padding: 0 10px;
+  max-width: 1180px;
+  color: var(--color-brass-ink);
+  background:
+    linear-gradient(180deg, rgb(255 244 214 / 0.4), transparent 30%, rgb(60 40 10 / 0.25)),
+    repeating-linear-gradient(90deg, rgb(255 240 200 / 0.05) 0 1px, transparent 1px 3px),
+    linear-gradient(175deg, #d8bd82 0%, #b58f4c 48%, #93713a 100%);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 238 196 / 0.4),
+    inset 0 0 0 3px rgb(90 64 28 / 0.4),
+    0 3px 0 #4f3a19,
+    0 18px 40px -10px rgb(0 0 0 / 0.85);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.rail-plate::-webkit-scrollbar {
+  display: none;
+}
+@media (min-width: 1100px) {
+  .rail-plate {
+    gap: 6px;
+    padding: 0 14px;
+  }
+}
+
+.rail-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  position: relative;
+}
+.rail-group + .rail-group::before {
+  content: "";
+  position: absolute;
+  left: -2px;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+  background: rgb(70 48 18 / 0.45);
+  box-shadow: 1px 0 0 rgb(255 240 200 / 0.3);
+}
+
+.knob-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 11px;
+  font-family: var(--font-book);
+  font-size: 0.74rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-brass-ink);
+  background: transparent;
+  border: 0;
+  border-radius: 2px;
+  text-shadow: 0 1px 0 rgb(255 240 200 / 0.5);
+  cursor: pointer;
+  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.1s ease;
+}
+.knob-btn:hover {
+  background: rgb(255 240 200 / 0.22);
+}
+.knob-btn:active {
+  transform: translateY(1px);
+}
+.knob-btn[aria-pressed="true"] {
+  background: rgb(60 40 12 / 0.22);
+  box-shadow:
+    inset 0 2px 3px rgb(40 26 8 / 0.45),
+    inset 0 -1px 0 rgb(255 240 200 / 0.35);
+}
+.knob-btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.knob-btn .count {
+  font-variant-numeric: lining-nums;
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  padding: 1px 5px;
+  border: 1px solid rgb(60 40 12 / 0.5);
+  border-radius: 1px;
+}
+.knob-btn:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: -2px;
+}
+
+/* The clock stop: the one control that must never be hard to find. */
+.clock-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 14px 0 8px;
+  font-family: var(--font-book);
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--color-brass-ink);
+  background: rgb(255 244 214 / 0.18);
+  border: 1px solid rgb(70 48 18 / 0.55);
+  border-radius: 2px;
+  text-shadow: 0 1px 0 rgb(255 240 200 / 0.5);
+  cursor: pointer;
+}
+.clock-btn:hover {
+  background: rgb(255 244 214 / 0.32);
+}
+.clock-btn .dial {
+  width: 28px;
+  height: 28px;
+  flex: none;
+}
+.clock-btn[aria-pressed="true"] {
+  color: #fff3e2;
+  background: var(--color-vermilion-ink);
+  border-color: #5e180b;
+  text-shadow: 0 -1px 0 rgb(0 0 0 / 0.35);
+}
+.clock-btn:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+.rail-status {
+  margin-left: auto;
+  padding: 0 6px 0 12px;
+  font-family: var(--font-book);
+  font-size: 0.78rem;
+  font-style: italic;
+  color: rgb(51 35 15 / 0.85);
+  white-space: nowrap;
+}
+@media (max-width: 1099px) {
+  .rail-status {
+    display: none;
+  }
+}
+
+/* Mobile tool tray, opened from the rail. */
+.tray {
+  pointer-events: auto;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: calc(var(--rail-h) + 16px);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-auto-rows: 48px;
+  align-items: center;
+  gap: 4px 6px;
+  padding: 8px 10px;
+  background: linear-gradient(175deg, #d8bd82 0%, #b58f4c 48%, #93713a 100%);
+  border-radius: 3px;
+  box-shadow:
+    inset 0 0 0 1px rgb(255 238 196 / 0.4),
+    0 18px 40px -10px rgb(0 0 0 / 0.85);
+}
+.tray .knob-btn {
+  justify-content: flex-start;
+  min-height: 44px;
+}
+.tray-note {
+  padding: 0 11px;
+  font-style: italic;
+  font-size: 0.82rem;
+  color: var(--color-brass-ink);
+}
+
+/* ------------------------------------------------------------------ */
+/*  Lens, touch instruments, specimen card                             */
+/* ------------------------------------------------------------------ */
+
+.lens {
+  position: fixed;
+  z-index: 20;
+  left: 0;
+  top: 0;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  box-shadow:
+    0 0 0 5px #b8924f,
+    0 0 0 7px #6f532a,
+    0 0 0 8px rgb(255 238 196 / 0.4),
+    0 16px 30px rgb(0 0 0 / 0.6);
+}
+.lens[data-visible="1"] {
+  opacity: 1;
+}
+.lens canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
+}
+.lens::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(circle at 32% 28%, rgb(255 255 255 / 0.18), transparent 38%);
+}
+@media (max-width: 699px) {
+  .lens {
+    width: 150px;
+    height: 150px;
+  }
+}
+
+.touch-knob {
+  position: fixed;
+  z-index: 21;
+  left: 0;
+  top: 0;
+  width: 48px;
+  height: 48px;
+  margin: -24px 0 0 -24px;
+  border-radius: 50%;
+  touch-action: none;
+  background: radial-gradient(circle at 35% 30%, #f0dba4, #b8924f 55%, #6f532a);
+  box-shadow: 0 0 0 2px #4f3a19, 0 8px 18px rgb(0 0 0 / 0.6);
+  border: 0;
+  color: var(--color-brass-ink);
+  font-family: var(--font-book);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.touch-knob.lens-knob {
+  margin-top: 70px;
+}
+
+.specimen {
+  position: fixed;
+  z-index: 25;
+  right: max(16px, calc((100vw - 1700px) / 2));
+  top: 24px;
+  width: min(380px, calc(100vw - 32px));
+  max-height: calc(100vh - var(--rail-h) - 60px);
+  overflow: auto;
+  color: var(--color-ink);
+  background-color: #eee4ca;
+  background-image: var(--fibre);
+  box-shadow:
+    0 0 0 1px rgb(60 40 20 / 0.35),
+    0 24px 48px -12px rgb(0 0 0 / 0.75);
+  padding: 20px 22px 18px;
+}
+.specimen::before {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border: 1px solid rgb(195 59 33 / 0.55);
+  pointer-events: none;
+}
+@media (max-width: 1099px) {
+  .specimen {
+    top: auto;
+    right: 8px;
+    left: 8px;
+    width: auto;
+    bottom: calc(var(--rail-h) + 16px);
+    max-height: 46vh;
+  }
+}
+.specimen .pin {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ff9a7a, var(--color-vermilion) 55%, #6d1d0e);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 0.5);
+}
+.specimen header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.specimen h2 {
+  margin: 0;
+  font-family: var(--font-plate);
+  font-weight: 600;
+  font-size: 2.2rem;
+  font-variation-settings: "opsz" 28;
+  line-height: 1;
+  font-variant-numeric: lining-nums;
+}
+.specimen h2 small {
+  font-size: 0.9rem;
+  font-style: italic;
+  font-weight: 400;
+  margin-right: 4px;
+}
+.specimen .caste {
+  font-family: var(--font-book);
+  font-style: italic;
+  color: var(--color-ink-soft);
+}
+.specimen dl {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 3px 14px;
+  margin: 14px 0 10px;
+  font-size: 0.94rem;
+}
+.specimen dt {
+  font-size: 0.7rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  padding-top: 3px;
+}
+.specimen dd {
+  margin: 0;
+  font-variant-numeric: lining-nums;
+}
+.specimen .bio {
+  font-family: var(--font-hand);
+  font-size: 1.36rem;
+  line-height: 1.25;
+  margin: 8px 0 12px;
+}
+.specimen .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.specimen .deceased {
+  color: var(--color-vermilion-ink);
+  font-style: italic;
+}
+
+.return-note {
+  position: fixed;
+  z-index: 26;
+  left: 50%;
+  top: 18px;
+  width: min(520px, calc(100vw - 24px));
+  transform: translateX(-50%) rotate(-0.7deg);
+  color: var(--color-ink);
+  background-color: #efe5cc;
+  background-image: var(--fibre);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(60 40 20 / 0.3);
+  padding: 18px 22px 16px;
+  animation: slip-in 0.9s var(--ease-instrument);
+}
+@keyframes slip-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -12px) rotate(-2deg);
+  }
+}
+html[data-still="1"] .return-note {
+  animation: fade-in 0.8s ease;
+}
+.return-note h2 {
+  margin: 0 0 4px;
+  font-family: var(--font-book);
+  font-weight: 400;
+  font-size: 0.74rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+}
+.return-note p {
+  margin: 0 0 12px;
+  font-family: var(--font-hand);
+  font-size: 1.6rem;
+  line-height: 1.24;
+}
+
+.summary {
+  position: fixed;
+  z-index: 27;
+  left: 50%;
+  bottom: calc(var(--rail-h) + 24px);
+  width: min(560px, calc(100vw - 24px));
+  transform: translateX(-50%);
+  color: var(--color-ink);
+  background-color: #efe5cc;
+  background-image: var(--fibre);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.85), 0 0 0 1px rgb(60 40 20 / 0.3);
+  padding: 18px 22px 16px;
+}
+.summary h2 {
+  margin: 0 0 6px;
+  font-family: var(--font-plate);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.3rem;
+}
+.summary p {
+  margin: 0 0 12px;
+  font-size: 1.02rem;
+  line-height: 1.5;
+}
+
+.toast {
+  position: fixed;
+  z-index: 28;
+  left: 50%;
+  bottom: calc(var(--rail-h) + 22px);
+  transform: translateX(-50%);
+  padding: 8px 14px;
+  color: var(--color-bone);
+  background: rgb(20 14 10 / 0.92);
+  border: 1px solid rgb(184 146 79 / 0.45);
+  font-style: italic;
+  font-size: 0.92rem;
+  pointer-events: none;
+}
+
+/* Notebook drawer on narrow screens. */
+.drawer {
+  position: fixed;
+  z-index: 29;
+  left: 8px;
+  right: 8px;
+  bottom: calc(var(--rail-h) + 16px);
+  max-height: 58vh;
+  overflow: auto;
+  color: var(--color-ink);
+  background-color: var(--color-bone);
+  background-image:
+    linear-gradient(90deg, transparent 26px, rgb(195 59 33 / 0.45) 26px 27px, transparent 27px),
+    repeating-linear-gradient(180deg, transparent 0 27px, rgb(90 70 50 / 0.16) 27px 28px),
+    var(--fibre);
+  box-shadow: 0 30px 60px -20px rgb(0 0 0 / 0.9);
+  padding: 16px 16px 20px 38px;
+}
+.drawer h2 {
+  margin: 0 0 8px;
+  font-family: var(--font-plate);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.4rem;
+}
+.drawer ol {
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.drawer li {
+  font-family: var(--font-hand);
+  font-size: 1.3rem;
+  line-height: 1.22;
+}
+.drawer h3 {
+  font-family: var(--font-book);
+  font-weight: 400;
+  font-size: 0.74rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-ink-soft);
+  margin: 14px 0 6px;
+}
+
+.ticker {
+  position: fixed;
+  z-index: 24;
+  left: 10px;
+  right: 10px;
+  bottom: calc(var(--rail-h) + 16px);
+  padding: 8px 12px;
+  color: var(--color-ink);
+  background-color: #eee4ca;
+  background-image: var(--fibre);
+  box-shadow: 0 12px 26px -10px rgb(0 0 0 / 0.8);
+  font-family: var(--font-hand);
+  font-size: 1.12rem;
+  line-height: 1.3;
+  transform: rotate(-0.6deg);
+  animation: fade-in 0.6s ease;
+}
+.ticker time {
+  font-family: var(--font-book);
+  font-size: 0.7rem;
+  font-style: italic;
+  margin-right: 6px;
+}
+@media (min-width: 1100px) {
+  .ticker {
+    display: none;
+  }
+}
+
+.page-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 15;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+}
+
+.perf {
+  position: fixed;
+  z-index: 40;
+  top: 8px;
+  left: 8px;
+  padding: 6px 8px;
+  font: 11px/1.35 ui-monospace, monospace;
+  color: #e8dcc0;
+  background: rgb(0 0 0 / 0.72);
+  pointer-events: none;
+  white-space: pre;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Phones: smaller slips, so the sky and surface stay visible. */
+@media (max-width: 699px) {
+  .slip {
+    width: 58%;
+    padding: 7px 10px 8px;
+  }
+  .slip .hand {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+  .slip .date {
+    font-size: 0.92rem;
+  }
+}
+
+/* Narrow screens: the specimen card is a compact sheet that leaves the ant in view. */
+@media (max-width: 1099px) {
+  .specimen {
+    max-height: 40vh;
+    padding: 14px 16px 12px;
+  }
+  .specimen .opt {
+    display: none;
+  }
+  .specimen h2 {
+    font-size: 1.7rem;
+  }
+  .specimen dl {
+    margin: 8px 0 6px;
+  }
+  .specimen .bio {
+    font-size: 1.18rem;
+    margin: 4px 0 8px;
+  }
+  .specimen .paper-btn {
+    min-height: 44px;
+  }
 }
